@@ -1,3 +1,4 @@
+const path = require('path');
 const express = require('express');
 // import ApolloServer
 const { ApolloServer } = require('apollo-server-express');
@@ -33,6 +34,15 @@ const startApolloServer = async (typeDefs, resolvers) => {
   // integrate our Apollo server with the Express application as middleware
   //This will create a special /graphql endpoint for the Express.js server that will serve as the main endpoint for accessing the entire API. That's not all—the /graphql endpoint also has a built-in testing tool we can use. 
   server.applyMiddleware({ app });
+
+  // Serve up static assets - update the back-end server's code to serve up the React front-end code in production
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static(path.join(__dirname, '../client/build')));
+}
+
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../client/build/index.html'));
+});
   
   //upon successful connection to mongoDB, we start the server
   db.once('open', () => {
