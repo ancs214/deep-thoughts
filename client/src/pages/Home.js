@@ -1,7 +1,7 @@
+import React from 'react';
 import { useQuery } from '@apollo/client';
 import { QUERY_THOUGHTS } from '../utils/queries';
 import ThoughtList from '../components/ThoughtList';
-import React from 'react';
 
 const Home = () => {
   // use useQuery hook to make query request
@@ -11,7 +11,7 @@ const Home = () => {
   //NEW SYNTAX: optional chaining   -   negates the need to check if an obj even exists before accessing its properties
   //if data exists, store it in the thoughts constant we just created. if data is undefined, save an empty array to the thoughts component
   const thoughts = data?.thoughts || [];
-  console.log(thoughts);
+  // console.log(thoughts);
 
   //If the query hasn't completed and loading is still defined, we display a message to indicate just that. Once the query is complete and loading is undefined, we pass the thoughts array and a custom title to the <ThoughtList> component as props.
   return (
