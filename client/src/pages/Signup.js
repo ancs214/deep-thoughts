@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useMutation } from '@apollo/client';
 import { ADD_USER } from '../utils/mutations';
+import Auth from '../utils/auth';
 
 const Signup = () => {
   //useState hook in React - captures field data from user and stores in state
@@ -28,6 +29,10 @@ const Signup = () => {
       const { data } = await addUser({
         variables: { ...formState }
       });
+
+      //function to set token to localStorage and reload page to homepage
+      Auth.login(data.addUser.token);
+
       //console.log(data) results with token and username, user ID
     } catch (e) {
       console.error(e);

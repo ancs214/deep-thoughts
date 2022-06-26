@@ -3,6 +3,8 @@
 //InMemoryCache enables the Apollo Client instance to cache API response data so that we can perform requests more efficiently.
 //createHttpLink allows us to control how the Apollo Client makes a request. Think of it like middleware for the outbound network requests.
 import { ApolloProvider, ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client';
+//function setContext we create a middleware function that will retrieve the token and combine it with the existing httpLink
+import { setContext } from '@apollo/client/link/context';
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
@@ -17,15 +19,28 @@ import Profile from './pages/Profile';
 import Signup from './pages/Signup';
 
 //est. new link to GraphQL server at /graphql endpoint
-//"proxy": "http://localhost:3001" is in package.json 
+//"proxy": "http://localhost:3001" is in package.json so we dont need if both servers are at same location
 const httpLink = createHttpLink({
   uri: '/graphql',
 });
 
+// underscore is because we arent using the first param expected by setContext()
+const authLink = setContext((_, { headers }) => {
+  const token = localStorage.getItem('id_token');
+  //set the HTTP request headers of every request to include the token, whether the request needs it or not. This is fine, because if the request doesn't need the token, our server-side resolver function won't check for it.
+  return {
+    headers: {
+      ...headers,
+      authorization: token ? `Bearer ${token}` : '',
+    },
+  };
+});
+
 //constructor to create apollo client instance and create connection to api endpoint
+//every request retrieves token and sets req headers before making the API request
 //also instantiate a new cache object
 const client = new ApolloClient({
-  link: httpLink,
+  link: authLink.concat(httpLink),
   cache: new InMemoryCache(),
 });
 
